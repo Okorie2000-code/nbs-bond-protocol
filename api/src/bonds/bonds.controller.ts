@@ -9,6 +9,7 @@ import { DistributeCouponDto } from './dto/distribute-coupon.dto';
 import { ClaimCreditsDto } from './dto/claim-credits.dto';
 import { TransferBondDto } from './dto/transfer-bond.dto';
 import { PaginationDto } from '../common/dto/pagination.dto';
+import { PeriodsQueryDto } from './dto/periods-query.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { AdminGuard } from '../common/guards/admin.guard';
 import {
@@ -19,7 +20,9 @@ import {
   ClaimCreditsResponse,
   TransferResponse,
   UndistributedTotalResponse,
+  AccruedCreditsResponse,
   SweepUndistributedResponse,
+  PeriodListResponse,
 } from './interfaces/bond.interface';
 
 @Controller('bonds')
@@ -27,6 +30,7 @@ export class BondsController {
   constructor(private readonly bondsService: BondsService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() dto: CreateBondDto): Promise<BondResponse> {
     return this.bondsService.create(dto);
@@ -43,6 +47,7 @@ export class BondsController {
   }
 
   @Post(':id/subscribe')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async subscribe(
     @Param('id', ParseIntPipe) id: number,
@@ -59,6 +64,7 @@ export class BondsController {
   }
 
   @Post(':id/coupon')
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @HttpCode(HttpStatus.OK)
   async distributeCoupon(
     @Param('id', ParseIntPipe) id: number,
@@ -68,6 +74,7 @@ export class BondsController {
   }
 
   @Post(':id/claim')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async claimCredits(
     @Param('id', ParseIntPipe) id: number,
@@ -83,6 +90,27 @@ export class BondsController {
     return this.bondsService.getUndistributedTotal(id);
   }
 
+  @Get(':id/periods')
+  async getPeriods(
+    @Param('id', ParseIntPipe) id: number,
+    @Query() query: PeriodsQueryDto,
+  ): Promise<PeriodListResponse> {
+    return this.bondsService.getPeriods(
+      id,
+      query.page,
+      query.limit,
+      query.includeReport,
+    );
+  }
+
+  @Get(':id/accrued')
+  async getAccruedCredits(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('holder') holder: string,
+  ): Promise<AccruedCreditsResponse> {
+    return this.bondsService.getAccruedCredits(id, holder);
+  }
+
   @Post(':id/sweep-undistributed')
   @UseGuards(JwtAuthGuard, AdminGuard)
   @HttpCode(HttpStatus.OK)
@@ -93,6 +121,7 @@ export class BondsController {
   }
 
   @Post(':id/transfer')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async transfer(
     @Param('id', ParseIntPipe) id: number,
@@ -102,6 +131,7 @@ export class BondsController {
   }
 
   @Post(':id/mature')
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @HttpCode(HttpStatus.OK)
   async mature(
     @Param('id', ParseIntPipe) id: number,

@@ -48,6 +48,8 @@ export interface CouponDistributionResponse {
   periodIndex: number;
   totalCredits: number;
   holderCount: number;
+  /** Total number of batches submitted for this period. */
+  batchCount: number;
 }
 
 export interface ClaimCreditsResponse {
@@ -70,8 +72,61 @@ export interface UndistributedTotalResponse {
   undistributedTotal: number;
 }
 
+export interface AccruedCreditsByType {
+  creditType: CreditTypeEnum;
+  amount: number;
+}
+
+export interface AccruedCreditsResponse {
+  bondId: number;
+  holder: string;
+  total: number;
+  perCreditType: AccruedCreditsByType[];
+}
+
 export interface SweepUndistributedResponse {
   bondId: number;
   swept: number;
   transactionHash: string;
+}
+
+export type ReportStatus =
+  | 'Pending'
+  | 'Verified'
+  | 'Challenged'
+  | 'Rejected';
+
+export interface PeriodReportResponse {
+  id: number;
+  projectId: string;
+  periodStart: number;
+  periodEnd: number;
+  carbonSequestered: number;
+  methodology: string;
+  ipfsHash: string;
+  providerAddress: string;
+  status: ReportStatus;
+  submittedAt: number;
+  verifiedAt: number;
+}
+
+export interface PeriodInfoResponse {
+  periodIndex: number;
+  startTime: number;
+  endTime: number;
+  totalCreditsEarned: number;
+  distributed: boolean;
+  reportId: number;
+  undistributed: number;
+  report?: PeriodReportResponse;
+}
+
+export interface PeriodListResponse {
+  data: PeriodInfoResponse[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }

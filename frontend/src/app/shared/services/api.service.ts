@@ -7,9 +7,10 @@ import {
   Bond, Project, Order, PaginatedResponse,
   SubscriptionResponse, CreateProjectDto, ListBondDto, BuyBondDto,
   ClaimCreditsResponse, TransferResponse,
-  UndistributedTotalResponse, SweepUndistributedResponse,
+  UndistributedTotalResponse, AccruedCreditsResponse, SweepUndistributedResponse,
   QuoteBalanceResponse, QuoteTransactionResponse,
   QuoteAsset, DepositQuoteDto, WithdrawQuoteDto,
+  HolderListResponse,
 } from '../interfaces/bond.interface';
 
 @Injectable({ providedIn: 'root' })
@@ -72,10 +73,24 @@ export class ApiService {
     );
   }
 
+  getHolders(id: number): Observable<HolderListResponse> {
+    return this.http.get<HolderListResponse>(
+      `/api/bonds/${id}/holders`,
+      { headers: this.headers() },
+    );
+  }
+
   getUndistributedTotal(id: number): Observable<UndistributedTotalResponse> {
     return this.http.get<UndistributedTotalResponse>(
       `/api/bonds/${id}/undistributed`,
       { headers: this.headers() },
+    );
+  }
+
+  getAccruedCredits(id: number, holder: string): Observable<AccruedCreditsResponse> {
+    return this.http.get<AccruedCreditsResponse>(
+      `/api/bonds/${id}/accrued`,
+      { params: { holder }, headers: this.headers() },
     );
   }
 
