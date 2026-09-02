@@ -70,6 +70,28 @@ export interface UndistributedTotalResponse {
   undistributedTotal: number;
 }
 
+export interface HolderBalance {
+  address: string;
+  balance: number;
+}
+
+export interface HolderListResponse {
+  bondId: number;
+  holders: HolderBalance[];
+}
+
+export interface AccruedCreditsByType {
+  creditType: string;
+  amount: number;
+}
+
+export interface AccruedCreditsResponse {
+  bondId: number;
+  holder: string;
+  total: number;
+  perCreditType: AccruedCreditsByType[];
+}
+
 export interface SweepUndistributedResponse {
   bondId: number;
   swept: number;
