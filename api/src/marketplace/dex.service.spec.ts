@@ -52,6 +52,39 @@ describe('DexService', () => {
     ];
   }
 
+  const SELLER = 'GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF';
+
+  /** A valid fully-decoded OrderResponse for use in getOrder spies */
+  const STUB_ORDER: OrderResponse = {
+    id: 1,
+    seller: SELLER,
+    bondId: 1,
+    amount: 100,
+    pricePerToken: 10,
+    quoteAsset: 'USDC',
+    status: OrderStatus.Open,
+    createdAt: new Date(1700000000 * 1000).toISOString(),
+  };
+
+  /** Build a raw order tuple exactly as decodeOrder expects it */
+  function makeRawOrder(overrides: Partial<{
+    id: bigint; seller: string; bondId: bigint; amount: bigint;
+    pricePerToken: bigint; quoteAsset: string; status: number;
+    createdAt: bigint; expiresAt: bigint;
+  }> = {}): any[] {
+    return [
+      overrides.id ?? BigInt(1),
+      overrides.seller ?? SELLER,
+      overrides.bondId ?? BigInt(1),
+      overrides.amount ?? BigInt(100),
+      overrides.pricePerToken ?? BigInt(10),
+      overrides.quoteAsset ?? 'USDC',
+      overrides.status ?? 0,
+      overrides.createdAt ?? BigInt(1700000000),
+      overrides.expiresAt ?? BigInt(1700086400),
+    ];
+  }
+
   beforeAll(async () => {
     contractService = {
       simulateCall: simulateCallMock,
